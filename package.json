@@ -1,0 +1,23 @@
+{
+  "name": "interactive-board",
+  "version": "1.0.0",
+  "description": "independent study demo",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "keywords": [],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/alex-haozheng/interactive-board.git"
+  },
+  "bugs": {
+    "url": "https://github.com/alex-haozheng/interactive-board/issues"
+  },
+  "homepage": "https://github.com/alex-haozheng/interactive-board#readme",
+  "dependencies": {
+    "express": "^4.21.2"
+  }
+}

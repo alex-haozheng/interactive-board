@@ -20,7 +20,7 @@ Follow these steps to set up and run the application locally:
 ### 1. Clone the Repository
 
 ```bash
-git clone [<repository-url>](https://github.com/alex-haozheng/interactive-board)
+git clone [[<repository-url>](https://github.com/alex-haozheng/interactive-board)](https://github.com/alex-haozheng/interactive-board.git)
 cd interactive-board
 ```
 

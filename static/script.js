@@ -10,6 +10,22 @@ const gridHeight = canvas.height;
 function updatePlot() {
     // const canvas = document.getElementById('whiteboard');
     // const ctx = canvas.getContext('2d');
+    fetch('/totalPoints', {
+        method: 'GET'
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Failed to fetch total points');
+        }
+        return response.json();
+    })
+    .then(points => {
+        const totalPointsDiv = document.getElementById('totalPoints');
+        totalPointsDiv.textContent = `Total Points: ${points}`;
+    })
+    .catch(error => console.error('Error updating total points:', error));
+
+    
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     drawGrid(ctx);
@@ -29,7 +45,7 @@ function updatePlot() {
         console.log("Skyline points received:", skylinePoints);
 
         // Define an array of colors for each skyline layer
-        const colors = ['red', 'blue', 'green', 'purple'];
+        const colors = ['red', 'blue', 'green', 'gray'];
 
         skylinePoints.forEach((layer, layerIndex) => {
             // Skip stroking/lining for the last layer
@@ -56,7 +72,7 @@ function updatePlot() {
                 }
             });
 
-            ctx.strokeStyle = color.setAlpha(0.5).toRgbString();
+            ctx.strokeStyle = color.setAlpha(0.35).toRgbString();
             ctx.lineWidth = 12; 
             ctx.stroke();
 
@@ -80,7 +96,7 @@ function updatePlot() {
 
 // Draw grid lines (optional)
 function drawGrid(ctx) {
-    const gridSize = 10;  // Grid square size, you can adjust this
+    const gridSize = 50;  // Grid square size, you can adjust this
     ctx.strokeStyle = '#ccc';
     ctx.lineWidth = 1;
 
@@ -121,7 +137,7 @@ canvas.addEventListener('click', (e) => {
 // Function to draw a point
 function drawPoint(x, y, color='red') {
     ctx.beginPath();
-    ctx.arc(x, y, 3.1, 0, 2 * Math.PI);
+    ctx.arc(x, y, 5, 0, 2 * Math.PI);
     ctx.fillStyle = color;
     ctx.fill();
     ctx.closePath();

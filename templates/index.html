@@ -11,14 +11,24 @@
     </style>
    </head>
    <body>
-    <h1 style="text-align: center;">Interactive Demo </h1>
+    <h1 style="text-align: center; font-size: 50px;">Skyline Interactive Demo </h1>
     <div style="text-align: center;" class="controls">
         <input type="number" id="numPoints" placeholder="Enter number of points" min="1" />
         <button id="generatePointsBtn">Generate Random Points</button>
         <button id="clearButton">Clear Points</button>
     </div>
-    <canvas id="whiteboard" width="500" height="500"></canvas>
+    <div id="totalPoints" style="text-align: center; font-size: 30px; font-weight: bold; margin-top: 10px;">
+        Total Points: 0
+    </div>
+    <div style="text-align: center; font-size: 20px; font-weight: bold; margin-top: 25px;" class="legend">
+        <strong style="font-size: 35px;">Legend:</strong>
+        <div style="color: red;" >Red: 1st Skyline Layer</div>
+        <div style="color: blue;" >Blue: 2nd Skyline Layer</div>
+        <div style="color: green;" >Green: 3rd Skyline Layer</div>
+        <div style="color: gray;" >Gray: Non-skyline points</div>
+     </div>
+    <canvas id="whiteboard" width="1000" height="1000"></canvas>
     <script type="module" src="../static/script.js"></script>
-    <!-- <footer> Demo made by Alex</footer> -->
+    <footer> Demo created by Alex Zheng</footer>
    </body>
 </html>

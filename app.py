@@ -4,13 +4,14 @@ from flask import Flask, request, jsonify, render_template
 
 app = Flask(__name__)
 
+np.random.seed(8)
 # store points in memory
 points = []
 nonskyline_points = []
 
-def generate_data(N, global_seed=1):
+def generate_data(N, global_seed=8):
     # Define proportions of each cluster
-    # np.random.seed(global_seed)
+    
     proportion_1 = 0.9  # 90% of the points in the first cluster
     proportion_2 = 0.1  # 10% of the points in the second cluster
 
@@ -20,10 +21,10 @@ def generate_data(N, global_seed=1):
 
     # Define means and standard deviations for two clusters
     #         X,  Y
-    mean_1 = [300, 200]
-    std_1 = [50, 50]
-    mean_2 = [200, 280]
-    std_2 = [80, 70]
+    mean_1 = [600, 400]
+    std_1 = [120, 220]
+    mean_2 = [420, 410]
+    std_2 = [200, 200]
 
     # Generate points for each cluster
     cluster_1 = np.random.normal(loc=mean_1, scale=std_1, size=(N_1, 2))
@@ -38,7 +39,7 @@ def generate_data(N, global_seed=1):
     df = df[(df['x'] > 0) & (df['y'] > 0)]
 
     # Filter out rows where 'X' or 'Y' are greater than 60
-    df = df[(df['x'] <= 500) & (df['y'] <= 500)]
+    df = df[(df['x'] <= 1000) & (df['y'] <= 1000)]
 
     return df
 
@@ -94,6 +95,11 @@ def add_points():
         return jsonify({'success': True, 'points': points})  # Respond with the updated list of points
     else:
         return jsonify({'success': False, 'message': 'Invalid data format, expected a list of points'}), 400
+
+@app.route('/totalPoints', methods=['GET'])
+def get_totalPoints():
+    print('total points:', len(points))
+    return jsonify(len(points))
 
 @app.route('/generatePoints', methods=['POST'])
 def generate_points():

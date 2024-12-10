@@ -5,20 +5,78 @@ const gridHeight = canvas.height;
 
 
 // Array to store points locally
-const points = [];
+// const points = [];
 
 // Function to update the plot with new points
-function updatePlot(points) {
+function updatePlot() {
     // const canvas = document.getElementById('whiteboard');
     // const ctx = canvas.getContext('2d');
     ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear the canvas first
 
     drawGrid(ctx);
-    // Loop through all the points and draw them
-    points.forEach(point => {
-        console.log("points received in update plot: ", point);
-        drawPoint(point.x, point.y);
-    });
+
+    // Call find_skyline_points function and handle its result
+    fetch('/findSkylinePoints', {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' }
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Error fetching skyline points');
+        }
+        return response.json(); // Assuming the endpoint returns JSON
+    })
+    .then(skylinePoints => {
+        console.log("Skyline points received:", skylinePoints);
+
+        // Define an array of colors for each skyline layer
+        const colors = ['red', 'blue', 'green', 'purple'];
+
+        skylinePoints.forEach((layer, layerIndex) => {
+            // Skip stroking/lining for the last layer
+            if (layerIndex === skylinePoints.length - 1) {
+                return; // Skip the last layer for stroking/lining
+            }
+
+            // Sort points in this layer by y-coordinate in descending order (or any custom rule)
+            layer.sort((a, b) => b.y - a.y); // Sort by y-coordinate for skyline (higher y first)
+
+            // Determine the color for this layer using the layerIndex
+            const color = colors[layerIndex % colors.length];
+
+            // Start drawing the trace for this layer
+            ctx.beginPath();
+
+            // Move to the first point in the layer to start the path
+            ctx.moveTo(layer[0].x, layer[0].y);
+
+            // Iterate through each point in the sorted layer and draw a line to the next point
+            layer.forEach((point, pointIndex) => {
+                if (pointIndex !== 0) {
+                    ctx.lineTo(point.x, point.y); // Draw a line to the next point
+                }
+            });
+
+            ctx.strokeStyle = `${color}`;
+            ctx.lineWidth = 12; 
+            ctx.stroke();
+
+            // After drawing the trace, draw the points in the layer
+            layer.forEach(point => {
+                drawPoint(point.x, point.y, color); // Draw points with the same color as the trace
+            });
+        });
+
+        // Finally, draw points for the last layer without stroking/lining
+        const lastLayer = skylinePoints[skylinePoints.length - 1];
+        const lastColor = colors[(skylinePoints.length - 1) % colors.length];
+
+        // Draw the points for the last layer without connecting them
+        lastLayer.forEach(point => {
+            drawPoint(point.x, point.y, lastColor); // Just draw the points for the last layer
+        });
+    })
+    .catch(error => console.error('Error finding skyline points:', error));
 }
 
 // Draw grid lines (optional)
@@ -53,19 +111,19 @@ canvas.addEventListener('click', (e) => {
 
     // Save the point and send it to the backend
     const point = { x, y };
-    points.push(point);
+    // points.push(point);
     sendPointToBackend(point);
-    console.log(points)
+    // console.log(points.length)
 
     // Draw the point on the canvas
     drawPoint(x, y);
 });
 
 // Function to draw a point
-function drawPoint(x, y) {
+function drawPoint(x, y, color='red') {
     ctx.beginPath();
-    ctx.arc(x, y, 2.1, 0, 2 * Math.PI);
-    ctx.fillStyle = 'red';
+    ctx.arc(x, y, 3.1, 0, 2 * Math.PI);
+    ctx.fillStyle = color;
     ctx.fill();
     ctx.closePath();
 }
@@ -87,7 +145,7 @@ function sendPointToBackend(point) {
     })
     .then((data) => {
         console.log('Backend response:', data),
-        updatePlot(data.points)
+        updatePlot()
     })
     .catch((error) => console.error('Error sending point:', error));
 }
@@ -101,7 +159,7 @@ clearButton.addEventListener('click', () => {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     // Clear the local points array
-    points.length = 0;
+    // points.length = 0;
 
     // Notify the backend to clear stored points
     fetch('/clear-points', { method: 'POST' })
@@ -119,29 +177,22 @@ document.getElementById('generatePointsBtn').addEventListener('click', () => {
         return;
     }
 
-    // Generate random points
-    const randomPoints = Array.from({ length: numPoints }, () => ({
-        x: Math.floor(Math.random() * gridWidth), // Random x between 0 and 500
-        y: Math.floor(Math.random() * gridHeight), // Random y between 0 and 500
-    }));
-
-    // Send random points to the backend
-    fetch('/points', {
+    fetch('/generatePoints', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(randomPoints), // Send the array of points
+        body: JSON.stringify({ N: numPoints }), 
     })
     .then((response) => {
         if (!response.ok) {
-            throw new Error('huh??');
+            throw new Error('Error generating points');
         }
         return response.json();
     })
-    .then((data) => {
-        console.log('Backend response:', data),
-        updatePlot(data.points)
+    .then((newPoints) => {
+        console.log('Backend response:', newPoints);
+        updatePlot(); 
     })
-    .catch(error => console.error('Error:', error));
+    .catch((error) => console.error('Error:', error));
 });
 
 
@@ -151,7 +202,7 @@ window.onload = function() {
     .then((response) => response.json())
     .then((data) => {
         console.log('Initial points:', data);
-        updatePlot(data);  // Update the plot with the initial points
+        updatePlot();  // Update the plot with the initial points
     })
     .catch((error) => console.error('Error fetching points:', error));
 }

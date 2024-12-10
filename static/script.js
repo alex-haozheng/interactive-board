@@ -1,17 +1,16 @@
+
+import tinycolor from "https://cdn.skypack.dev/tinycolor2"; /// dum package
+
 const canvas = document.getElementById('whiteboard');
 const ctx = canvas.getContext('2d');
 const gridWidth = canvas.width;
 const gridHeight = canvas.height;
 
-
-// Array to store points locally
-// const points = [];
-
 // Function to update the plot with new points
 function updatePlot() {
     // const canvas = document.getElementById('whiteboard');
     // const ctx = canvas.getContext('2d');
-    ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear the canvas first
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     drawGrid(ctx);
 
@@ -42,7 +41,7 @@ function updatePlot() {
             layer.sort((a, b) => b.y - a.y); // Sort by y-coordinate for skyline (higher y first)
 
             // Determine the color for this layer using the layerIndex
-            const color = colors[layerIndex % colors.length];
+            const color = tinycolor(colors[layerIndex % colors.length]);
 
             // Start drawing the trace for this layer
             ctx.beginPath();
@@ -57,7 +56,7 @@ function updatePlot() {
                 }
             });
 
-            ctx.strokeStyle = `${color}`;
+            ctx.strokeStyle = color.setAlpha(0.5).toRgbString();
             ctx.lineWidth = 12; 
             ctx.stroke();
 

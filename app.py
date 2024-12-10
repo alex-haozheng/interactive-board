@@ -20,10 +20,10 @@ def generate_data(N, global_seed=1):
 
     # Define means and standard deviations for two clusters
     #         X,  Y
-    mean_1 = [590, 250]
+    mean_1 = [300, 200]
     std_1 = [50, 50]
-    mean_2 = [300, 390]
-    std_2 = [50, 100]
+    mean_2 = [200, 280]
+    std_2 = [80, 70]
 
     # Generate points for each cluster
     cluster_1 = np.random.normal(loc=mean_1, scale=std_1, size=(N_1, 2))
@@ -38,7 +38,7 @@ def generate_data(N, global_seed=1):
     df = df[(df['x'] > 0) & (df['y'] > 0)]
 
     # Filter out rows where 'X' or 'Y' are greater than 60
-    df = df[(df['x'] <= 800) & (df['y'] <= 600)]
+    df = df[(df['x'] <= 500) & (df['y'] <= 500)]
 
     return df
 
